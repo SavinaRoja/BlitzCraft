@@ -1,4 +1,4 @@
-"""
+'''
 This is the setup script for BlitzCraft. To use this script to install the code
 you should execute it with your python interpreter with the following command:
 
@@ -7,7 +7,7 @@ python setup.py install
 Use "sudo" before that if you need administrative privileges on linux.
 
 Visit http://docs.python.org/2/distutils/index.html for more info.
-"""
+'''
 
 from distutils.core import setup
 
