@@ -28,7 +28,7 @@ class BlitzBot(object):
         '''
         self.pick_boosts(boosts)
         self.left_click(self.start_key)
-        if 5 in boosts:  # The 5 second time extension boost is selected
+        if 4 in boosts:  # The 5 second time extension boost is selected
             duration = 70
         else:
             duration = 65
@@ -40,7 +40,7 @@ class BlitzBot(object):
             self.read_blitz_board()
             self.make_move()
 
-    def pick_boosts(boost_nums=[]):
+    def pick_boosts(self, boost_nums=[]):
         '''
         Clicks on the boosts provided, note that only three boosts may be
         selected at any given time, so providing more than three is a waste.
@@ -60,17 +60,33 @@ class BlitzBot(object):
         except IOError:
             print('blitz_window.txt not found. Define the game window now?')
             if raw_input('[y/N] ') in ['y', 'Y']:  # Define the window
-                if not utils.define_game_window(self.mouse):  # Quits if canceled
+                if utils.define_game_window(self.mouse):
+                    #Parse the blitz_window.txt file
+                    with open('blitz_window.txt', 'r') as blitz_window:
+                        fl, sl = blitz_window.readlines()
+                        self.upper_x, self.upper_y = [int(i) for i in fl.split(',')]
+                        self.lower_x, self.lower_y = [int(i) for i in sl.split(',')]
+                else:  # Quits if canceled
                     print('Aborting BlitzBot initialization...')
                     sys.exit(0)  # Quits
             else:  # Do not define the window
                 print('Aborting BlitzBot initialization...')
                 sys.exit(0)  # Quits
-        #Parse the blitz_window.txt file
-        fl, sl = blitz_window.readlines()
-        self.upper_x, self.upper_y = [int(i) for i in fl.split(',')]
-        self.lower_x, self.lower_y = [int(i) for i in sl.split(',')]
-        blitz_window.close()
+        else:
+            #Parse the blitz_window.txt file
+            fl, sl = blitz_window.readlines()
+            self.upper_x, self.upper_y = [int(i) for i in fl.split(',')]
+            self.lower_x, self.lower_y = [int(i) for i in sl.split(',')]
+            blitz_window.close()
+
+    def redefine_window(self):
+        '''Like define_window except it assumes you want to overwrite it'''
+        if utils.define_game_window(self.mouse):
+            blitz_window = open('blitz_window.txt', 'r')
+            fl, sl = blitz_window.readlines()
+            self.upper_x, self.upper_y = [int(i) for i in fl.split(',')]
+            self.lower_x, self.lower_y = [int(i) for i in sl.split(',')]
+            blitz_window.close()
 
     def define_keys(self):
         '''
@@ -125,16 +141,34 @@ class BlitzBot(object):
         lr_x, lr_y = lower_right[0], lower_right[1]
         #Get the gtk.gdk window
         w = gtk.gdk.get_default_root_window()
-        size = (lr_x - ul_x + 10, lr_y - ul_y + 10) # Adds 10 extra pixels
+        size = (lr_x - ul_x + 1, lr_y - ul_y + 1)
         pb = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB,False,8,size[0],size[1])
         pb = pb.get_from_drawable(w,w.get_colormap(),ul_x,ul_y,0,0,size[0],size[1])
+        #You can save the images with code like:
+        #pb.save('test.png', 'png')
         #Returns the NumPy array, axes are inverted (y,x)
         return pb.get_pixels_array()
 
     def read_blitz_board(self):
         '''
+        Takes a screenshot of the game window containing the gems and extracts
+        pixel data in order to compile a fresh 8x8 array for self.board
         '''
-        pass
+        #We only need a minimal screenshot which contains all the gem pixels
+        upper = self.gem_keys[0][0]
+        lower = self.gem_keys[7][7]
+        screen = self.screenshot(upper, lower)
+        #Iterate over our gem key positions in order to color the board
+        board = []
+        for i in self.gem_keys:  # X dimension
+            board_col = []
+            for j in i:  # Y dimension
+                gem_x, gem_y = j[0], j[1]
+                #Extract a single pixel, remembering to invert the axes
+                gem_pixel = screen[gem_y - upper[1]][gem_x - upper[0]]
+                board_col.append(self.determine_pixel_color(gem_pixel))
+            board.append(board_col)
+        self.board = board
 
     def make_move(self):
         '''
@@ -147,8 +181,8 @@ class BlitzBot(object):
         will sleep for a period specified by the BlitzBot's delay attribute
         after executing the click.
         '''
-        m.press(coords[0], coords[1])
-        m.release(coords[0], coords[1])
+        self.mouse.press(coords[0], coords[1])
+        self.mouse.release(coords[0], coords[1])
         time.sleep(self.delay)
 
     def swap(self, coords1, coords2):
@@ -156,11 +190,10 @@ class BlitzBot(object):
         Swaps the gems at the provided coordinates. Sleeps according to
         self.delay afterwards.
         '''
-        self.left_click(coords1)
-        m.press(coords1[0], coords1[1])
-        m.release(coords1[0], coords1[1])
-        m.press(coords2[0], coords2[1])
-        m.release(coords2[0], coords2[1])
+        self.mouse.press(coords1[0], coords1[1])
+        self.mouse.release(coords1[0], coords1[1])
+        self.mouse.press(coords2[0], coords2[1])
+        self.mouse.release(coords2[0], coords2[1])
         time.sleep(self.delay)
 
     def random_move(self):
@@ -170,19 +203,19 @@ class BlitzBot(object):
         smarter code fails to find anything to do.
         '''
         #Get random indices
-        i = random.randint(0, 8)
-        j = random.randint(0, 8)
+        i = random.randint(0, 7)
+        j = random.randint(0, 7)
         #Pick a random direction
         direction = random.choice(['up', 'left', 'down', 'right'])
         #Each condition has a quick boundary check
         if direction == 'up' and j-1 > -1:
-            self.swap([i,j], [i, j-1])
-        elif direction == 'left' and i-1> -1:
-            self.swap([i,j], [i-1, j])
-        elif direction == 'down' and j+1 < 9:
-            self.swap([i,j], [i, j+1])
-        elif direction == 'right' and i+1 < 9:
-            self.swap([i,j], [i+1, j])
+            self.swap(self.gem_keys[i][j], self.gem_keys[i][j-1])
+        elif direction == 'left' and i-1 > -1:
+            self.swap(self.gem_keys[i][j], self.gem_keys[i-1][j])
+        elif direction == 'down' and j+1 < 8:
+            self.swap(self.gem_keys[i][j], self.gem_keys[i][j+1])
+        elif direction == 'right' and i+1 < 8:
+            self.swap(self.gem_keys[i][j], self.gem_keys[i+1][j])
         else:  # Random move was not valid, try again
             #Recursive implementation, invalid moves should be rare enough
             self.random_move()
