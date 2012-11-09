@@ -16,6 +16,7 @@ class BlitzBot(object):
     def __init__(self, delay=0.1):
         self.delay = delay
         self.mouse = pymouse.PyMouse()
+        self.screenshot = utils.screenshot
         self.define_window()
         self.define_keys()
         self.initialize_board()
@@ -82,11 +83,12 @@ class BlitzBot(object):
     def redefine_window(self):
         '''Like define_window except it assumes you want to overwrite it'''
         if utils.define_game_window(self.mouse):
-            blitz_window = open('blitz_window.txt', 'r')
-            fl, sl = blitz_window.readlines()
-            self.upper_x, self.upper_y = [int(i) for i in fl.split(',')]
-            self.lower_x, self.lower_y = [int(i) for i in sl.split(',')]
-            blitz_window.close()
+            with open('blitz_window.txt', 'r') as blitz_window:
+                fl, sl = blitz_window.readlines()
+                self.upper_x, self.upper_y = [int(i) for i in fl.split(',')]
+                self.lower_x, self.lower_y = [int(i) for i in sl.split(',')]
+            self.define_keys()
+            
 
     def define_keys(self):
         '''
@@ -126,29 +128,6 @@ class BlitzBot(object):
         #Initializes the board structure as all gray
         self.board = [['gray'] * 8 for i in xrange(8)]
 
-    def screenshot(self, upper_left=[0,0], lower_right=[1,1]):
-        '''
-        This method expects coordinates for the upper left corner of the game
-        window and the lower right. These should be provided as a pair either
-        as a list, [x,y] or as a tuple, (x,y).
-        
-        This method returns a NumPy array of the pixels in the screenshot, be
-        aware that the array will invert the axes to (y,x) and the indices will
-        begin at 0.
-        '''
-        #Get individual coordinates
-        ul_x, ul_y = upper_left[0], upper_left[1]
-        lr_x, lr_y = lower_right[0], lower_right[1]
-        #Get the gtk.gdk window
-        w = gtk.gdk.get_default_root_window()
-        size = (lr_x - ul_x + 1, lr_y - ul_y + 1)
-        pb = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB,False,8,size[0],size[1])
-        pb = pb.get_from_drawable(w,w.get_colormap(),ul_x,ul_y,0,0,size[0],size[1])
-        #You can save the images with code like:
-        #pb.save('test.png', 'png')
-        #Returns the NumPy array, axes are inverted (y,x)
-        return pb.get_pixels_array()
-
     def read_blitz_board(self):
         '''
         Takes a screenshot of the game window containing the gems and extracts
@@ -171,8 +150,7 @@ class BlitzBot(object):
         self.board = board
 
     def make_move(self):
-        '''
-        '''
+        '''The master control function for making a move.'''
         self.random_move()
 
     def left_click(self, coords):
@@ -243,15 +221,13 @@ class BlitzBot(object):
         else:
             return "gray"
 
-    def determine_average_color(self, pix_array, side):
+    def determine_average_color(self, pix_array):
         '''
         This method should work on any 2D array of pixels; it will average the
         RGB values of every pixel in the array and then return a color string
         for the average values.
         '''
-        r_sum = 0
-        g_sum = 0
-        b_sum = 0
+        r_sum = g_sum = b_sum = 0
         pixel_count = 0
         for i in pix_array:
             for j in i:
@@ -263,7 +239,7 @@ class BlitzBot(object):
         r = r_sum / float(pixel_count)
         g = g_sum / float(pixel_count)
         b = b_sum / float(pixel_count)
-        return determine_color((r,g,b))
+        return self.determine_pixel_color((r,g,b))
 
     def are_same_color(self, coords=[]):
         '''
