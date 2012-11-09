@@ -10,14 +10,22 @@ Visit http://docs.python.org/2/distutils/index.html for more info.
 '''
 
 from distutils.core import setup
+import sys
+
+def dependency_check(dep_list):
+    for dep in dep_list:
+        try:
+            __import__(dep)
+        except ImportError:
+            print('Missing dependency: {0} Please install this module\n'.format(dep))
 
 #Check for dependencies before installing
-dependencies = ['pymouse', 'gtk', 'numpy']
-for dep in dependencies:
-    try:
-        __import__(dep)
-    except ImportError:
-        print('Missing dependency: {0} Please install this module'.format(dep))
+if sys.platform == 'darwin':  # Mac
+    dependency_check(['Qwartz', 'Appkit', 'pymouse'])
+elif sys.platform == 'win32':  # Windows
+    dependency_check(['win32api', 'win32con', 'pythoncom', 'pyHook', 'pymouse'])
+else:  # Unix/Linux
+    dependency_check(['Xlib', 'gtk', 'pymouse'])
 
 setup(name='BlitzCraft',
       version='0.0.1',
@@ -27,6 +35,6 @@ setup(name='BlitzCraft',
       url='https://github.com/SavinaRoja/BlitzCraft',
       package_dir={'': 'src'},
       packages=['blitzcraft'],
-      scripts=['scripts/'],
+      #scripts=['scripts/'],
       #data_files=[('foo', ['foo/bar'])]
       )
