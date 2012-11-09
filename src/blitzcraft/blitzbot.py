@@ -33,6 +33,8 @@ class BlitzBot(object):
             duration = 70
         else:
             duration = 65
+        #Wait a bit for the game to start
+        time.sleep(1)
         #Timer for the game
         start = time.time()
         end = time.time() + duration
