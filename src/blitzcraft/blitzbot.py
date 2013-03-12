@@ -107,7 +107,7 @@ class BlitzBot(object):
         self.start_key = [sk_x, sk_y]
         #Calculate boost_keys positions
         self.boost_keys = []
-        for i in range(5):
+        for i in range(6):
             bk_x = int(round((0.102 + 0.082 * i) * self.width)) + self.upper_x
             bk_y = int(round(0.51 * self.length)) + self.upper_y
             self.boost_keys.append([bk_x, bk_y])
