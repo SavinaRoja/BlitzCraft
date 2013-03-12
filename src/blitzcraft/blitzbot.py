@@ -243,14 +243,14 @@ class BlitzBot(object):
         b = b_sum / float(pixel_count)
         return self.determine_pixel_color((r,g,b))
 
-    def are_same_color(self, coords=[]):
+    def are_same_color(board, *coords):
         '''
         This will return True if the gems at each of the x,y coordinates have
         the same color on the current board (False if not). A basic use case
         would be to pass three gem positions to see if they are the same color
         to determine if there is a possible match.
         
-        e.g.    self.are_same_color([[x1,y1], [x2,y2], [x3,y3]])
+        e.g.    are_same_color([[x1,y1], [x2,y2], [x3,y3]])
         '''
         #Negative indices are valid in python, but not in the case of a game
         #board. Return False if a negative index has been passed
@@ -262,10 +262,11 @@ class BlitzBot(object):
             #Refer to python's documentation about sets and frozensets if this
             #use of set() is unfamiliar
             #http://docs.python.org/2/library/stdtypes.html#set-types-set-frozenset
-            colors = set([self.board[c[0]][c[1]] for c in coords])
+            colors = set([board[c[0]][c[1]] for c in coords])
             if len(colors) == 1:
                 return True
             else:
                 return False
         except IndexError:
             return False
+    

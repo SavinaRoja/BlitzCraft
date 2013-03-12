@@ -8,7 +8,7 @@ The X axis of the board increases to the right, the Y axis increases downwards.
 
 import random
 
-def are_same_color(c1, c2, c3, board):
+def are_same_color(board, *coords):
     '''
     This will return True if the gems at each of the x,y coordinates have
     the same color on the current board (False if not). A basic use case
@@ -19,7 +19,6 @@ def are_same_color(c1, c2, c3, board):
     '''
     #Negative indices are valid in python, but not in the case of a game
     #board. Return False if a negative index has been passed
-    coords = [c1, c2, c3]
     for coord in coords:
         if coord[0] < 0 or coord[1] < 0:
             return False
@@ -75,70 +74,134 @@ def basic_detect_three(board, gem_keys, swap):
         for j in xrange(8):
             #Sorted by the way the gem moves
             #Moves left (i - 1)
-            if are_same_color([i-3, j], [i-2, j], [i, j], board):
+            if are_same_color(board, [i-3, j], [i-2, j], [i,j]):
                 swap(gem_keys[i][j], gem_keys[i-1][j])
                 #return None
                 continue
-            elif are_same_color([i-1, j-1], [i-1, j-2], [i, j], board):
+            elif are_same_color(board, [i-1, j-1], [i-1, j-2], [i,j]):
                 swap(gem_keys[i][j], gem_keys[i-1][j])
                 #return None
                 continue
-            elif are_same_color([i-1, j+1], [i-1, j+2], [i, j], board):
+            elif are_same_color(board, [i-1, j+1], [i-1, j+2], [i,j]):
                 swap(gem_keys[i][j], gem_keys[i-1][j])
                 #return None
                 continue
-            elif are_same_color([i-1, j-1], [i-1, j+1], [i, j], board):
+            elif are_same_color(board, [i-1, j-1], [i-1, j+1], [i,j]):
                 swap(gem_keys[i][j], gem_keys[i-1][j])
                 #return None
                 continue
             #Moves up (j - 1)
-            elif are_same_color([i, j-3], [i, j-2], [i, j], board):
+            elif are_same_color(board, [i, j-3], [i, j-2], [i,j]):
                 swap(gem_keys[i][j], gem_keys[i][j-1])
                 #return None
                 continue
-            elif are_same_color([i-2, j-1], [i-1, j-1], [i, j], board):
+            elif are_same_color(board, [i-2, j-1], [i-1, j-1], [i,j]):
                 swap(gem_keys[i][j], gem_keys[i][j-1])
                 #return None
                 continue
-            elif are_same_color([i+2, j-1], [i+1, j-1], [i, j], board):
+            elif are_same_color(board, [i+2, j-1], [i+1, j-1], [i,j]):
                 swap(gem_keys[i][j], gem_keys[i][j-1])
                 #return None
                 continue
-            elif are_same_color([i-1, j-1], [i+1, j-1], [i, j], board):
+            elif are_same_color(board, [i-1, j-1], [i+1, j-1], [i,j]):
                 swap(gem_keys[i][j], gem_keys[i][j-1])
                 #return None
                 continue
             #Moves right (i + 1)
-            elif are_same_color([i+3, j], [i+2, j], [i, j], board):
+            elif are_same_color(board, [i+3, j], [i+2, j], [i,j]):
                 swap(gem_keys[i][j], gem_keys[i+1][j])
                 #return None
                 continue
-            elif are_same_color([i+1, j-2], [i+1, j-1], [i, j], board):
+            elif are_same_color(board, [i+1, j-2], [i+1, j-1], [i,j]):
                 swap(gem_keys[i][j], gem_keys[i+1][j])
                 #return None
                 continue
-            elif are_same_color([i+1, j+2], [i+1, j+1], [i, j], board):
+            elif are_same_color(board, [i+1, j+2], [i+1, j+1], [i,j]):
                 swap(gem_keys[i][j], gem_keys[i+1][j])
                 #return None
                 continue
-            elif are_same_color([i+1, j-1], [i+1, j+1], [i, j], board):
+            elif are_same_color(board, [i+1, j-1], [i+1, j+1], [i,j]):
                 swap(gem_keys[i][j], gem_keys[i+1][j])
                 #return None
                 continue
             #Moves down (j + 1)
-            elif are_same_color([i, j+3], [i, j+2], [i, j], board):
+            elif are_same_color(board, [i, j+3], [i, j+2], [i,j]):
                 swap(gem_keys[i][j], gem_keys[i][j+1])
                 #return None
                 continue
-            elif are_same_color([i-2, j+1], [i-1, j+1], [i, j], board):
+            elif are_same_color(board, [i-2, j+1], [i-1, j+1], [i,j]):
                 swap(gem_keys[i][j], gem_keys[i][j+1])
                 #return None
                 continue
-            elif are_same_color([i+2, j+1], [i+1, j+1], [i, j], board):
+            elif are_same_color(board, [i+2, j+1], [i+1, j+1], [i,j]):
                 swap(gem_keys[i][j], gem_keys[i][j+1])
                 #return None
                 continue
-            elif are_same_color([i-1, j+1], [i+1, j+1], [i, j], board):
+            elif are_same_color(board, [i-1, j+1], [i+1, j+1], [i,j]):
                 swap(gem_keys[i][j], gem_keys[i][j+1])
                 #return None
                 continue
+
+def basic_detect_five(board, gem_keys, swap):
+    '''
+    This move logic looks for moves involving 5 gems.
+    '''
+    move_made = False
+    for i in xrange(8):
+        for j in xrange(8):
+            #Sorted by the way the gem moves
+            #Moves left (i - 1)
+            if are_same_color(board, [i-1,j-2], [i-1,j-1], [i-1,j+1], [i-1,j+2], [i,j]):
+                swap(gem_keys[i][j], gem_keys[i-1][j])
+                move_made = True
+                continue
+            elif are_same_color(board, [i-1,j-2], [i-1, j-1], [i-2,j], [i-3,j], [i,j]):
+                swap(gem_keys[i][j], gem_keys[i-1][j])
+                move_made = True
+                continue
+            elif are_same_color(board, [i-1,j+2], [i-1, j+1], [i-2,j], [i-3,j], [i,j]):
+                swap(gem_keys[i][j], gem_keys[i-1][j])
+                move_made = True
+                continue
+            #Moves up (j - 1)
+            elif are_same_color(board, [i-2, j-1], [i-1, j-1], [i+2,j-1], [i+1,j-1], [i,j]):
+                swap(gem_keys[i][j], gem_keys[i][j-1])
+                move_made = True
+                continue
+            elif are_same_color(board, [i,j-3], [i,j-2], [i+1,j-1], [i+2,j-1], [i,j]):
+                swap(gem_keys[i][j], gem_keys[i][j-1])
+                move_made = True
+                continue
+            elif are_same_color(board, [i,j-3], [i,j-2], [i-1,j-1], [i-2,j-1], [i,j]):
+                swap(gem_keys[i][j], gem_keys[i][j-1])
+                move_made = True
+                continue
+            #Moves right (i + 1)
+            elif are_same_color(board, [i+1, j-1], [i+1, j-2], [i+1,j+1], [i+1,j+2], [i,j]):
+                swap(gem_keys[i][j], gem_keys[i][j-1])
+                move_made = True
+                continue
+            elif are_same_color(board, [i+1,j-1], [i+1,j-2], [i+2,j], [i+3,j], [i,j]):
+                swap(gem_keys[i][j], gem_keys[i][j-1])
+                move_made = True
+                continue
+            elif are_same_color(board, [i+1,j+1], [i+1,j+2], [i+2,j], [i+3,j], [i,j]):
+                swap(gem_keys[i][j], gem_keys[i][j-1])
+                move_made = True
+                continue
+            #Moves down (j + 1)
+            elif are_same_color(board, [i-1, j+1], [i-2, j+1], [i+1,j+1], [i+2,j+1], [i,j]):
+                swap(gem_keys[i][j], gem_keys[i][j-1])
+                move_made = True
+                continue
+            elif are_same_color(board, [i-1,j+1], [i-2,j+1], [i,j+2], [i,j+3], [i,j]):
+                swap(gem_keys[i][j], gem_keys[i][j-1])
+                move_made = True
+                continue
+            elif are_same_color(board, [i+1,j+1], [i+2,j+1], [i,j+2], [i,j+3], [i,j]):
+                swap(gem_keys[i][j], gem_keys[i][j-1])
+                move_made = True
+                continue
+    return move_made
+
+    
