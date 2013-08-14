@@ -95,6 +95,10 @@ class BlitzBot(object):
         Once the BlitzBot has acquired the screen pixel coordinates for the
         upper left and lower right corners of the game window, this method
         initializes the locations for important click positions.
+
+        There is nothing magical about these numbers, I merely did some quick
+        math on a screenshot and then tweaked it a bit. If you need to improve
+        or modify it to enable better gem recognition, please do!
         '''
         #Calculate width and length
         self.width = self.lower_x - self.upper_x
