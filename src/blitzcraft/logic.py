@@ -14,8 +14,7 @@ def are_same_color(board, *coords):
     the same color on the current board (False if not). A basic use case
     would be to pass three gem positions to see if they are the same color
     to determine if there is a possible match.
-    
-    e.g.    are_same_color([[x1,y1], [x2,y2], [x3,y3]])
+      for example: are_same_color([[x1,y1], [x2,y2], [x3,y3]])
     '''
     #Negative indices are valid in python, but not in the case of a game
     #board. Return False if a negative index has been passed
@@ -59,13 +58,13 @@ def random_move(board, gem_keys, swap):
         else:  # Random move was not valid, try again
             #Recursive implementation, invalid moves should be rare enough
             random_move()
-            
+
 
 def basic_detect_three(board, gem_keys, swap):
     '''
     This move logic is simple and can certainly be improved, even small tweaks
     might make a statistical performance difference.
-    
+
     Assuming that the bot read the board perfectly and was not confused by any
     special effects or special gems, this method will always find a move. It
     might help to think about why this is true.
