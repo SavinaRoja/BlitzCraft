@@ -34,7 +34,6 @@ def are_same_color(board, *coords):
     except IndexError:
         return False
 
-
 def random_move(board, gem_keys, swap):
         '''
         The bare minimum approach to any game. This method will make a random
@@ -58,7 +57,6 @@ def random_move(board, gem_keys, swap):
         else:  # Random move was not valid, try again
             #Recursive implementation, invalid moves should be rare enough
             random_move()
-
 
 def basic_detect_three(board, gem_keys, swap):
     '''
