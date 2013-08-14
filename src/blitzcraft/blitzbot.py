@@ -8,7 +8,6 @@ import sys
 import time
 import random
 import pymouse
-import gtk.gdk
 import utils
 
 class BlitzBot(object):
@@ -36,7 +35,6 @@ class BlitzBot(object):
         #Wait a bit for the game to start
         time.sleep(1)
         #Timer for the game
-        start = time.time()
         end = time.time() + duration
         #Play until time is up
         while time.time() < end:
@@ -90,7 +88,7 @@ class BlitzBot(object):
                 self.upper_x, self.upper_y = [int(i) for i in fl.split(',')]
                 self.lower_x, self.lower_y = [int(i) for i in sl.split(',')]
             self.define_keys()
-            
+
 
     def define_keys(self):
         '''
@@ -188,19 +186,19 @@ class BlitzBot(object):
         #Pick a random direction
         direction = random.choice(['up', 'left', 'down', 'right'])
         #Each condition has a quick boundary check
-        if direction == 'up' and j-1 > -1:
-            self.swap(self.gem_keys[i][j], self.gem_keys[i][j-1])
-        elif direction == 'left' and i-1 > -1:
-            self.swap(self.gem_keys[i][j], self.gem_keys[i-1][j])
-        elif direction == 'down' and j+1 < 8:
-            self.swap(self.gem_keys[i][j], self.gem_keys[i][j+1])
-        elif direction == 'right' and i+1 < 8:
-            self.swap(self.gem_keys[i][j], self.gem_keys[i+1][j])
+        if direction == 'up' and j - 1 > -1:
+            self.swap(self.gem_keys[i][j], self.gem_keys[i][j - 1])
+        elif direction == 'left' and i - 1 > -1:
+            self.swap(self.gem_keys[i][j], self.gem_keys[i - 1][j])
+        elif direction == 'down' and j + 1 < 8:
+            self.swap(self.gem_keys[i][j], self.gem_keys[i][j + 1])
+        elif direction == 'right' and i + 1 < 8:
+            self.swap(self.gem_keys[i][j], self.gem_keys[i + 1][j])
         else:  # Random move was not valid, try again
             #Recursive implementation, invalid moves should be rare enough
             self.random_move()
 
-    def determine_pixel_color(self, (r,g,b)):
+    def determine_pixel_color(self, (r, g, b)):
         '''
         Determines the color of a pixel. This code adapted from dotOrion's
         BejeweledBot. https://github.com/dotOrion/BejeweledBot
@@ -241,7 +239,7 @@ class BlitzBot(object):
         r = r_sum / float(pixel_count)
         g = g_sum / float(pixel_count)
         b = b_sum / float(pixel_count)
-        return self.determine_pixel_color((r,g,b))
+        return self.determine_pixel_color((r, g, b))
 
     def are_same_color(board, *coords):
         '''
@@ -249,7 +247,7 @@ class BlitzBot(object):
         the same color on the current board (False if not). A basic use case
         would be to pass three gem positions to see if they are the same color
         to determine if there is a possible match.
-        
+
         e.g.    are_same_color([[x1,y1], [x2,y2], [x3,y3]])
         '''
         #Negative indices are valid in python, but not in the case of a game
@@ -269,4 +267,4 @@ class BlitzBot(object):
                 return False
         except IndexError:
             return False
-    
+
