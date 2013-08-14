@@ -21,7 +21,7 @@ def dependency_check(dep_list):
 
 #Check for dependencies before installing
 if sys.platform == 'darwin':  # Mac
-    dependency_check(['Qwartz', 'Appkit', 'pymouse'])
+    dependency_check(['Quartz', 'Appkit', 'pymouse'])
 elif sys.platform == 'win32':  # Windows
     dependency_check(['win32api', 'win32con', 'pythoncom', 'pyHook', 'pymouse'])
 else:  # Unix/Linux
